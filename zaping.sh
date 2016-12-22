@@ -16,6 +16,7 @@
 #               greater than 0.2 (only root can go less than 0.2)
 #
 #   Returns positive floating point number on success and -1 on failure
+#   Maximum rtt is limited to 1s
 
 set -o pipefail
 
@@ -42,7 +43,7 @@ else
 fi
 if [ $delta -gt $MAXAGE ]; then
     wrkfile=`mktemp`
-    ping -c $count -i $interval "$host" > "$wrkfile" 2>/dev/null
+    ping -c $count -i $interval -W 1 "$host" > "$wrkfile" 2>/dev/null
     loss=`grep loss "$wrkfile" | cut -f 6 -d" " | cut -f1 -d"%" || echo -1`
     min=`grep rtt "$wrkfile" | cut -f  4 -d" " | cut -f 1 -d"/" || echo -1`
     avg=`grep rtt "$wrkfile" | cut -f  4 -d" " | cut -f 2 -d"/" || echo -1`
